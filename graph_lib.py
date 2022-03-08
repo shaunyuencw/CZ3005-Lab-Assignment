@@ -3,6 +3,7 @@ import json
 
 from queue import PriorityQueue
 from math import radians, cos, sin, asin, sqrt
+import time
 
 # Opens file and return data as a dictionary
 def load_json(file_name : str) -> dict:
@@ -11,12 +12,13 @@ def load_json(file_name : str) -> dict:
     return data_dict
 
 # return traced and reversed path
-def trace_path(parent, start, end):
+def trace_path(parent, start, end, toPrint):
     path = [end]
     while path[-1] != start:
         path.append(parent[path[-1]])
     path.reverse()
-    print_path(path)
+    if toPrint:
+        print_path(path)
     return path
 
 # Print out path
@@ -129,25 +131,10 @@ class Graph:
         
         # Move by x_axis then by y_axis
         return abs(x_from - x_to) + abs(y_from - y_to)
-    
-    # Gets and return haversine distance between two nodes
-    def get_haversine_distance(self, node_from: str, node_to: str) -> float:
-        x_from, y_from = self.get_coordinates(node_from)
-        x_to, y_to = self.get_coordinates(node_to)
-
-        x_from, y_from, x_to, y_to = map(radians, [x_from, y_from, x_to, y_to])
-
-        d_x = x_to - x_from
-        d_y = y_to - y_from
-        a = sin(d_y / 2) ** 2 + cos(y_from) * cos(y_to) * sin(d_x / 2) ** 2
-        c = 2 * asin(sqrt(a))
-        r = 6371 # Radius of eart in kilometers. Use 3956 for miles
-
-        return c * r
-
 
     # A* Algorithm
-    def a_star_search(self, start_node: str, end_node: str, heuristic_multiplier, dist_type):
+    def a_star_search(self, start_node: str, end_node: str, heuristic_multiplier, dist_type, print_path):
+        start_time = time.time()
         dist_tracker: dict[str, float] = {start_node: 0.}
         heuristic_tracker: dict[str, float] = {start_node: 0.}
         cost_tracker: dict[str, float] = {start_node: 0.}
@@ -162,9 +149,10 @@ class Graph:
 
             # Stop searching if target node is found
             if current_node == end_node:
-                self.graph.path = trace_path(self.previous_path, start_node, end_node)
+                self.path = trace_path(self.previous_path, start_node, end_node, print_path)
 
-                return(self.path, dist_tracker[end_node], cost_tracker[end_node])
+                #return(self.path, dist_tracker[end_node], cost_tracker[end_node])
+                return (time.time() - start_time, len(dist_tracker), dist_tracker[end_node])
 
             # Process adjacent nodes using cost function heuristic
             adjacent_nodes = self.get_adj_nodes(current_node)
@@ -196,7 +184,7 @@ class Graph:
                     self.previous_path[adj_node] = current_node
 
         #! No path found            
-        return None
+        return (time.time() - start_time, len(dist_tracker), dist_tracker[end_node])
 
     # Uniform Cost Search Algorithm
     def ucs_search(self, start_node: str, end_node: str):

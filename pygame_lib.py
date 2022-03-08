@@ -429,10 +429,6 @@ class Window:
                 elif dist_type == "manhattan":
                     herustic_cost = self.graph.get_manhattan_distance(adj_node, end_node)
 
-                #* Haversine distance (Spherical distance around earth
-                elif dist_type == "haversine":
-                    herustic_cost = self.graph.get_haversine_distance(adj_node, end_node)
-
                 a_star_cost = new_distance + (herustic_cost * heuristic_multiplier)
 
                 #! Skip this node if energy exceeds our budget

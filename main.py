@@ -5,9 +5,6 @@ from queue import PriorityQueue
 from graph_lib import Graph
 from pygame_lib import Window
 
-graph = Graph()
-window = Window(graph)
-
 def backtrace(parent, start, end):
     path = [end]
     while path[-1] != start:
@@ -203,6 +200,8 @@ def calc_costs(x:str, g: Graph):
 
 
 def main():
+    graph = Graph()
+    window = Window(graph)
     while(True):
             print()
             print(f"1) Relaxed shortest path (No energy constraint)")
@@ -232,16 +231,13 @@ def main():
                 if (choice >= 3 and choice <= 5):
                     print("E: Euclidean (Pythagorean theorem aka Bird's Eye Distance)")
                     print("M: Manhattan (x_coord distance + y_coord distance aka Grid Distance)")
-                    print("H: Haversine (Spherical distance around earth)")
                     dist_choice = input("Select type of distance heuristic: ")
                     dist_choice = dist_choice.upper()
 
                     if dist_choice == 'E':
                         dist_type = "euclidean"
-                    elif dist_choice == 'M':
+                    elif dist_choice == 'M': 
                         dist_type = "manhattan"
-                    elif dist_choice == 'H':
-                        dist_type = "haversine"
                     else: 
                         print("Invalid distance type")
                         continue
