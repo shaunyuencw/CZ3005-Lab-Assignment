@@ -24,18 +24,19 @@ dist = euclidean_df["Distance"]
 ax1.set_xlabel('Multiplier')
 ax1.set_ylabel('Nodes Explored')
 color = 'tab:orange'
-ax1.plot(mult, nodes, color=color)
+ax1.plot(mult, nodes, color=color, label='Explored nodes')
 
 ax2 = ax1.twinx()
 
 color = 'tab:blue'
 ax2.set_ylabel('Distance of path found')
-ax2.plot(mult, dist, color=color)
+ax2.plot(mult, dist, color=color, label='Distance of path')
+
+ax1.legend(loc=0)
+ax2.legend(loc=0)
 
 plt.title("Euclidean Time vs Optimality")
 plt.show()
-
-# %%
 
 # %%
 manhatten_fig, ax1 = plt.subplots()
@@ -48,13 +49,16 @@ dist = manhattan_df["Distance"]
 ax1.set_xlabel('Multiplier')
 ax1.set_ylabel('Nodes Explored')
 color = 'tab:orange'
-ax1.plot(mult, nodes, color=color)
+ax1.plot(mult, nodes, color=color, label='Nodes explored')
 
 ax2 = ax1.twinx()
 
 color = 'tab:blue'
 ax2.set_ylabel('Distance of path found')
-ax2.plot(mult, dist, color=color)
+ax2.plot(mult, dist, color=color, label='Distance of path')
+
+ax1.legend(loc=0)
+ax2.legend(loc=0)
 
 plt.title("Manhattan Time vs Optimality")
 plt.show()
