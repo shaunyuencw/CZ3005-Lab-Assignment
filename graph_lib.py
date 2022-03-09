@@ -152,7 +152,7 @@ class Graph:
                 self.path = trace_path(self.previous_path, start_node, end_node, print_path)
 
                 #return(self.path, dist_tracker[end_node], cost_tracker[end_node])
-                return (time.time() - start_time, len(dist_tracker), dist_tracker[end_node])
+                return (round(time.time() - start_time, 3), len(dist_tracker), round(dist_tracker[end_node], 3))
 
             # Process adjacent nodes using cost function heuristic
             adjacent_nodes = self.get_adj_nodes(current_node)
@@ -184,7 +184,7 @@ class Graph:
                     self.previous_path[adj_node] = current_node
 
         #! No path found            
-        return (time.time() - start_time, len(dist_tracker), dist_tracker[end_node])
+        return (round(time.time() - start_time, 3), len(dist_tracker), round(dist_tracker[end_node], 3))
 
     # Uniform Cost Search Algorithm
     def ucs_search(self, start_node: str, end_node: str):
