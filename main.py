@@ -100,7 +100,7 @@ def ucs_dist_start(graph, start, end):
     return None
 
 
-def yen_k_shortest_path(graph, start, end, budget, astar=True):
+def yen_algo_mod(graph, start, end, budget, astar=True):
     # initialisation
     # A is used to store k shortest paths
     # ucs/astar returns path, distance, and energy_cost
@@ -263,12 +263,12 @@ def main():
 
             elif choice == 4:
                 start_time = time.time()
-                yen_k_shortest_path(graph, start_node, end_node, budget, astar=False)
+                yen_algo_mod(graph, start_node, end_node, budget, astar=False)
                 end_time = time.time()
                 print("total time taken: ", end_time - start_time)
             elif choice == 5:
                 start_time = time.time()
-                yen_k_shortest_path(graph, start_node, end_node, budget, astar=True)
+                yen_algo_mod(graph, start_node, end_node, budget, astar=True)
                 end_time = time.time()
                 print("total time taken: ", end_time - start_time)
             else:
