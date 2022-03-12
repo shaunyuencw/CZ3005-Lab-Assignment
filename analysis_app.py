@@ -24,7 +24,7 @@ def print_path(path: list[str]):
 
 def main():
     multiplier_list = []
-    mult, max_mult, step = 0.5, 2, 0.05
+    mult, max_mult, step = 0, 5, 0.01
     while(mult <= max_mult):
         multiplier_list.append(round(mult,2))
         mult += step
