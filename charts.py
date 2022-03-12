@@ -23,19 +23,20 @@ dist = euclidean_df["Distance"]
 
 ax1.set_xlabel('Multiplier')
 ax1.set_ylabel('Nodes Explored')
-color = 'tab:orange'
-ax1.plot(mult, nodes, color=color, label='Explored nodes')
+color = 'tab:red'
+ax1.plot(mult, nodes, color=color, label='Nodes Explored')
+
 
 ax2 = ax1.twinx()
 
 color = 'tab:blue'
 ax2.set_ylabel('Distance of path found')
-ax2.plot(mult, dist, color=color, label='Distance of path')
+ax2.plot(mult, dist, color=color, label='Path Distance')
 
-ax1.legend(loc=0)
-ax2.legend(loc=0)
+ax1.legend(loc=2)
+ax2.legend(loc=1)
 
-plt.title("Euclidean Time vs Optimality")
+plt.title("Optimality Plot for Euclidean Distance")
 plt.show()
 
 # %%
@@ -48,18 +49,18 @@ dist = manhattan_df["Distance"]
 
 ax1.set_xlabel('Multiplier')
 ax1.set_ylabel('Nodes Explored')
-color = 'tab:orange'
-ax1.plot(mult, nodes, color=color, label='Nodes explored')
+color = 'tab:red'
+ax1.plot(mult, nodes, color=color, label='Nodes Explored')
 
 ax2 = ax1.twinx()
 
 color = 'tab:blue'
 ax2.set_ylabel('Distance of path found')
-ax2.plot(mult, dist, color=color, label='Distance of path')
+ax2.plot(mult, dist, color=color, label='Path Distance')
 
-ax1.legend(loc=0)
-ax2.legend(loc=0)
+ax1.legend(loc=2)
+ax2.legend(loc=1)
 
-plt.title("Manhattan Time vs Optimality")
+plt.title("Optimality Plot for Manhattan Distance")
 plt.show()
 # %%
