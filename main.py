@@ -101,29 +101,27 @@ def ucs_dist_start(graph, start, end):
 
 
 def yen_algo_mod(graph, start, end, budget, astar=True):
-    # initialisation
-    # A is used to store k shortest paths
+    
     # ucs/astar returns path, distance, and energy_cost
     if astar:
         shortest_path = astar_start(graph, start, end, 0.91)
     else:
         shortest_path = ucs_dist_start(graph, start, end)
-
+    
+    # A stores k-shortest paths
     A = [shortest_path]
-    # B is used to store list of potential kth shortest paths
+    # B stores list of potential k-shortest paths
     B = []
     k = 1
     while True:
         print("finding ", k, " shortest path")
-        k_minus_one_shortest_path = A[-1][0]
-        for i in range(len(k_minus_one_shortest_path) - 1):
-            # i determines the spur node (aka ith node to the end node)
-            spur_node = k_minus_one_shortest_path[i]
-            # the path from start node to the spur node
-            root_path = k_minus_one_shortest_path[:i+1]
+        # kmos => k-1 shortest path
+        kmos_path = A[-1][0]
+        for i in range(len(kmos_path) - 1):
+            spur_node = kmos_path[i]
+            root_path = kmos_path[:i+1]
 
-            # if root path coincides with any of the previous k-1th shortest path
-            # remove that edge so that the new path wont generate the same path
+            # prevent generation of the same path by removing edge of root path that coincides with previous paths
             original_adjacent_nodes = graph.adjacency_list[spur_node]
             new_adjacent_nodes = list(original_adjacent_nodes)
             for path in A:
@@ -134,13 +132,13 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
                         new_adjacent_nodes.remove(to_be_deleted_node)
             graph.adjacency_list[spur_node] = new_adjacent_nodes
 
-            # remove root path nodes except spur node from the graph
+            # remove nodes from the root path except for the spur node
             removed_nodes = []
             for node in root_path[0][:-1]:
                 removed_node = graph.adjacency_list.pop(node)
                 removed_nodes.append(removed_node)
 
-            # find the shortest path from spur node to end node
+            # find the shortest path from spur node to terminal node
             if astar:
                 returned_values = astar_start(graph, spur_node, end, 0.91)
             else:
@@ -149,30 +147,26 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
             if returned_values:
                 spur_path, spur_dist, spur_energy_cost = returned_values
 
-                # calculate the final path, which combines root_path and spur_path
+                # calculate the values of the generated path by combining the root and spur paths
                 total_path = root_path[:-1] + spur_path
                 total_dist, total_cost = calc_costs(total_path, graph)
                 potential_k = (total_path, total_dist, total_cost)
-                # print(potential_k)
 
-                # Add the potential k-shortest path to the heap
+                # add the newly generated path to the array
                 if potential_k not in B:
                     B.append(potential_k)
 
-            # Add back the edges and nodes that were removed from the graph.
+            # Add the edges and nodes back
             graph.adjacency_list[spur_node] = original_adjacent_nodes
             for node, removed_node in zip(root_path[:-1], removed_nodes):
                 graph.adjacency_list[node] = removed_node
 
-        # if no potential paths
+        # handles the exception when there are no potential paths
         if not B:
-            # This handles the case of there being no spur paths, or no spur paths left.
-            # This could happen if the spur paths have already been exhausted (added to A)
-            # or when there's no spur paths at all
             continue
-        # Sort the potential k-shortest paths by distance.
+        # sort the potential k-shortest paths by distance
         B.sort(key=lambda b: b[1])
-        # Add the lowest cost path becomes the k-shortest path.
+        # let the lowest cost path become the k-shortest path
         next_shortest_path = B.pop(0)
         if next_shortest_path[2] <= budget:
             print_path(next_shortest_path[0])
@@ -183,7 +177,7 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
         A.append(next_shortest_path)
         k += 1
 
-    return A
+        return A
 
 
 def calc_costs(x:str, g: Graph):
