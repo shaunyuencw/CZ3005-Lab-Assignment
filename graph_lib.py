@@ -36,7 +36,7 @@ class Graph:
         if input_graph == None or input_coords == None or input_dists == None or input_cost == None:
             print(f"Initializing graph from data file")
             print(f"Loading graph from G.json")
-            self.adj_list = load_json("data/G.json")
+            self.adj_list: dict = load_json("data/G.json")
 
             print(f"Loading coordinates from Coord.json")
             self.coords = load_json("data/Coord.json")
