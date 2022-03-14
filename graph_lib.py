@@ -22,7 +22,7 @@ def trace_path(parent, start, end, toPrint):
     return path
 
 # Print out path
-def print_path(path: list[str]):
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")

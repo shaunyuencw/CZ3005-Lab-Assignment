@@ -14,7 +14,7 @@ def backtrace(parent, start, end):
     return path
 
 
-def print_path(path: list[str]):
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")
@@ -30,7 +30,7 @@ def astar_start(graph, start: str, end: str, heuristic):
     came_from = {}
 
     while not queue.empty():
-        astar_cost, curr_node = queue.get()
+        curr_node = queue.get()[1]
 
         # stop if the current node is the end node
         if curr_node == end:
@@ -42,13 +42,13 @@ def astar_start(graph, start: str, end: str, heuristic):
             return (path, dist_so_far[end], energy_cost_so_far[end])
 
         # add adjacent nodes by cost function
-        adjacent_nodes = graph.adjacent_nodes(curr_node)
+        adjacent_nodes = graph.get_adj_nodes(curr_node)
         for adjacent_node in adjacent_nodes:
-            new_dist = dist_so_far[curr_node] + graph.find_distance(curr_node, adjacent_node)
-            new_energy_cost = energy_cost_so_far[curr_node] + graph.find_cost(curr_node, adjacent_node)
+            new_dist = dist_so_far[curr_node] + graph.get_distance(curr_node, adjacent_node)
+            new_energy_cost = energy_cost_so_far[curr_node] + graph.get_cost(curr_node, adjacent_node)
 
             # heuristic_cost = graph.euclidean_dist(adjacent_node, end)
-            heuristic_cost = graph.manhattan_dist(adjacent_node, end)
+            heuristic_cost = graph.get_manhattan_distance(adjacent_node, end)
             new_astar_cost = new_dist + heuristic_cost * heuristic
 
             # if new node or overall cost is lower than previously calculated cost,
@@ -71,8 +71,9 @@ def ucs_dist_start(graph, start, end):
     queue.put((0, start))
     came_from = {}
 
-    while queue.queue:
-        distance, curr_node = queue.get()
+    while len(queue.queue) > 0:
+        # print("In Loop")
+        curr_node = queue.get()[1]
 
         # stop if the current node is the end node
         if curr_node == end:
@@ -84,10 +85,12 @@ def ucs_dist_start(graph, start, end):
             return (path, dist_so_far[end], energy_cost_so_far[end])
 
         # add adjacent nodes by distance
-        adjacent_nodes = graph.adjacent_nodes(curr_node)
+        adjacent_nodes = graph.get_adj_nodes(curr_node)
+
+        # print(adjacent_nodes)
         for adjacent_node in adjacent_nodes:
-            new_dist = dist_so_far[curr_node] + graph.find_distance(curr_node, adjacent_node)
-            new_energy_cost = energy_cost_so_far[curr_node] + graph.find_cost(curr_node, adjacent_node)
+            new_dist = dist_so_far[curr_node] + graph.get_distance(curr_node, adjacent_node)
+            new_energy_cost = energy_cost_so_far[curr_node] + graph.get_cost(curr_node, adjacent_node)
 
             # if new node or overall dist is lower than previously calculated dist,
             # add adjacent nodes
@@ -100,7 +103,7 @@ def ucs_dist_start(graph, start, end):
     return None
 
 
-def yen_k_shortest_path(graph, start, end, budget, astar=True):
+def yen_k_shortest_path(graph, start, end, budget, astar):
     # initialisation
     # A is used to store k shortest paths
     # ucs/astar returns path, distance, and energy_cost
@@ -124,7 +127,7 @@ def yen_k_shortest_path(graph, start, end, budget, astar=True):
 
             # if root path coincides with any of the previous k-1th shortest path
             # remove that edge so that the new path wont generate the same path
-            original_adjacent_nodes = graph.adjacency_list[spur_node]
+            original_adjacent_nodes = graph.adj_list[spur_node]
             new_adjacent_nodes = list(original_adjacent_nodes)
             for path in A:
                 path = path[0]
@@ -132,12 +135,12 @@ def yen_k_shortest_path(graph, start, end, budget, astar=True):
                     to_be_deleted_node = path[i + 1]
                     if to_be_deleted_node in new_adjacent_nodes:
                         new_adjacent_nodes.remove(to_be_deleted_node)
-            graph.adjacency_list[spur_node] = new_adjacent_nodes
+            graph.adj_list[spur_node] = new_adjacent_nodes
 
             # remove root path nodes except spur node from the graph
             removed_nodes = []
             for node in root_path[0][:-1]:
-                removed_node = graph.adjacency_list.pop(node)
+                removed_node = graph.adj_list.pop(node)
                 removed_nodes.append(removed_node)
 
             # find the shortest path from spur node to end node
@@ -160,9 +163,9 @@ def yen_k_shortest_path(graph, start, end, budget, astar=True):
                     B.append(potential_k)
 
             # Add back the edges and nodes that were removed from the graph.
-            graph.adjacency_list[spur_node] = original_adjacent_nodes
+            graph.adj_list[spur_node] = original_adjacent_nodes
             for node, removed_node in zip(root_path[:-1], removed_nodes):
-                graph.adjacency_list[node] = removed_node
+                graph.adj_list[node] = removed_node
 
         # if no potential paths
         if not B:
@@ -192,8 +195,8 @@ def calc_costs(x:str, g: Graph):
     for i in range(1, len(x)):
         prev = x[i - 1]
         curr = x[i]
-        cost = g.find_cost(prev, curr)
-        dist = g.find_distance(prev, curr)
+        cost = g.get_cost(prev, curr)
+        dist = g.get_distance(prev, curr)
         total_dist += dist
         total_cost += cost
     return (total_dist, total_cost)

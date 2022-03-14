@@ -27,7 +27,7 @@ w_scale = WIDTH / ((-73500016) - (-74499998))
 h_scale = HEIGHT / (41299997 - 40300009)
 
 # Coordinate scaling
-def scale_coordinate(coord: list[float, float]):
+def scale_coordinate(coord: 'list[float, float]'):
     # print(f"coord[0]: {type(coord[0])}")
     # print(f"min_x: {type(min_x)}")
     # print(f"w_scale: {type(w_scale)}")
@@ -50,7 +50,7 @@ def trace_path(parent, start, end):
     return path
 
 # Print out path
-def print_path(path: list[str]):
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")
@@ -63,12 +63,12 @@ class Window:
         self.window = None
 
     # Draw node on window
-    def draw_node(self, coord: list[float, float], colour: tuple[int, int, int] = COLORS["BLUE"], size: int = 1):
+    def draw_node(self, coord: 'list[float, float]', colour: 'tuple[int, int, int]' = COLORS["BLUE"], size: int = 1):
         scaled_coord = scale_coordinate(coord)
         pygame.draw.circle(self.window, colour, scaled_coord, size)
 
     # Draw edge between two nodes
-    def draw_edge(self, node_from: str, node_to: str, colour: tuple[int, int, int] = COLORS["BLUE"]):
+    def draw_edge(self, node_from: str, node_to: str, colour: 'tuple[int, int, int]' = COLORS["BLUE"]):
         node_from_coord = self.graph.get_coordinates(node_from)
         scaled_node_from_coord = scale_coordinate(node_from_coord)
         node_to_coord = self.graph.get_coordinates(node_to)
