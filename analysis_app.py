@@ -16,7 +16,7 @@ def backtrace(parent, start, end):
     return path
 
 
-def print_path(path: list[str]):
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")
