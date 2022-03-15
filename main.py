@@ -43,8 +43,8 @@ def astar_start(graph, start: str, end: str, heuristic):
             new_dist = dist_so_far[curr_node] + graph.get_distance(curr_node, adjacent_node)
             new_energy_cost = energy_cost_so_far[curr_node] + graph.get_cost(curr_node, adjacent_node)
 
-            heuristic_cost = graph.get_euclidean_distance(adjacent_node, end)
-            # heuristic_cost = graph.get_manhattan_distance(adjacent_node, end)
+            # heuristic_cost = graph.get_euclidean_distance(adjacent_node, end)
+            heuristic_cost = graph.get_manhattan_distance(adjacent_node, end)
             new_astar_cost = new_dist + heuristic_cost * heuristic
 
             # add adjacent nodes if new node or overall cost is lower than previously calculated cost
@@ -94,7 +94,7 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
     
     # ucs/astar returns path, distance, and energy_cost
     if astar:
-        shortest_path = astar_start(graph, start, end, 1.19)
+        shortest_path = astar_start(graph, start, end, 0.86)
     else:
         shortest_path = ucs_dist_start(graph, start, end)
     
@@ -130,7 +130,7 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
 
             # find the shortest path from spur node to terminal node
             if astar:
-                returned_values = astar_start(graph, spur_node, end, 1.19)
+                returned_values = astar_start(graph, spur_node, end, 0.86)
             else:
                 returned_values = ucs_dist_start(graph, spur_node, end)
 
@@ -166,9 +166,6 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
 
         A.append(next_shortest_path)
         k += 1
-
-        return A
-
 
 def calc_costs(x:str, g: Graph):
     total_cost = 0.
