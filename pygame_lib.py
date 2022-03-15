@@ -255,7 +255,7 @@ class Window:
             if is_searching and p_queue.empty() == False:
                 distance, current_node = p_queue.get()
                 coordinates = self.graph.get_coordinates(current_node)
-                self.draw_node(coordinates, COLORS["GREEN"])
+                self.draw_node(coordinates, COLORS["BLUE"])
 
                 # Stop searching if target node is found
                 if current_node == end_node:
