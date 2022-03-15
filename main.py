@@ -14,7 +14,7 @@ def backtrace(parent, start, end):
     return path
 
 
-def print_path(path: list[str]):
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")
@@ -30,15 +30,11 @@ def astar_start(graph, start: str, end: str, heuristic):
     came_from = {}
 
     while not queue.empty():
-        astar_cost, curr_node = queue.get()
+        curr_node = queue.get()[1]
 
         # stop if the current node is the end node
         if curr_node == end:
             path = backtrace(came_from, start, end)
-            # print("distance:", dist_so_far[end])
-            # print("energy:", energy_cost_so_far[end])
-            # print("length of path:", len(graph.path))
-            # print("nodes explored: ", len(dist_so_far))
             return (path, dist_so_far[end], energy_cost_so_far[end])
 
         # add adjacent nodes by cost function
@@ -47,18 +43,16 @@ def astar_start(graph, start: str, end: str, heuristic):
             new_dist = dist_so_far[curr_node] + graph.get_distance(curr_node, adjacent_node)
             new_energy_cost = energy_cost_so_far[curr_node] + graph.get_cost(curr_node, adjacent_node)
 
-            # heuristic_cost = graph.euclidean_dist(adjacent_node, end)
-            heuristic_cost = graph.get_manhattan_distance(adjacent_node, end)
+            heuristic_cost = graph.get_euclidean_distance(adjacent_node, end)
+            # heuristic_cost = graph.get_manhattan_distance(adjacent_node, end)
             new_astar_cost = new_dist + heuristic_cost * heuristic
 
-            # if new node or overall cost is lower than previously calculated cost,
-            # add adjacent nodes
+            # add adjacent nodes if new node or overall cost is lower than previously calculated cost
             if adjacent_node not in astar_cost_so_far or new_astar_cost < astar_cost_so_far[adjacent_node]:
                 dist_so_far[adjacent_node] = new_dist
                 energy_cost_so_far[adjacent_node] = new_energy_cost
                 astar_cost_so_far[adjacent_node] = new_astar_cost
                 queue.put((new_astar_cost, adjacent_node))
-                # add parent pointers
                 came_from[adjacent_node] = curr_node
     return None
 
@@ -71,16 +65,13 @@ def ucs_dist_start(graph, start, end):
     queue.put((0, start))
     came_from = {}
 
-    while queue.queue:
-        distance, curr_node = queue.get()
+    while len(queue.queue) > 0:
+        print('Search is running')
+        curr_node = queue.get()[1]
 
         # stop if the current node is the end node
         if curr_node == end:
             path = backtrace(came_from, start, end)
-            # print("distance:", dist_so_far[end])
-            # print("energy:", energy_cost_so_far[end])
-            # print("length of path:", len(path) - 1)
-            # print("nodes explored: ", len(dist_so_far))
             return (path, dist_so_far[end], energy_cost_so_far[end])
 
         # add adjacent nodes by distance
@@ -89,8 +80,7 @@ def ucs_dist_start(graph, start, end):
             new_dist = dist_so_far[curr_node] + graph.get_distance(curr_node, adjacent_node)
             new_energy_cost = energy_cost_so_far[curr_node] + graph.get_cost(curr_node, adjacent_node)
 
-            # if new node or overall dist is lower than previously calculated dist,
-            # add adjacent nodes
+            # add adjacent nodes if new node or overall dist is lower than previously calculated dist
             if adjacent_node not in dist_so_far or new_dist < dist_so_far[adjacent_node]:
                 dist_so_far[adjacent_node] = new_dist
                 energy_cost_so_far[adjacent_node] = new_energy_cost
@@ -104,7 +94,7 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
     
     # ucs/astar returns path, distance, and energy_cost
     if astar:
-        shortest_path = astar_start(graph, start, end, 0.91)
+        shortest_path = astar_start(graph, start, end, 1.19)
     else:
         shortest_path = ucs_dist_start(graph, start, end)
     
@@ -140,7 +130,7 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
 
             # find the shortest path from spur node to terminal node
             if astar:
-                returned_values = astar_start(graph, spur_node, end, 0.91)
+                returned_values = astar_start(graph, spur_node, end, 1.19)
             else:
                 returned_values = ucs_dist_start(graph, spur_node, end)
 
@@ -170,8 +160,8 @@ def yen_algo_mod(graph, start, end, budget, astar=True):
         next_shortest_path = B.pop(0)
         if next_shortest_path[2] <= budget:
             print_path(next_shortest_path[0])
-            print("dist: ", next_shortest_path[1])
-            print("cost: ", next_shortest_path[2])
+            print("Total distance: ", next_shortest_path[1])
+            print("Total cost: ", next_shortest_path[2])
             return next_shortest_path
 
         A.append(next_shortest_path)
@@ -198,12 +188,12 @@ def main():
     window = Window(graph)
     while(True):
             print()
-            print(f"1) Relaxed shortest path (No energy constraint)")
-            print(f"2) Energy Constrained shortest path")
-            print(f"3) Energy Constrained shortest path with Heuristic")
+            print(f"1) Task 1: Relaxed shortest path (UCS)")
+            print(f"2) Task 2: Energy constrained shortest path (UCS)")
+            print(f"3) Task 3: Energy Constrained shortest path w/ Heuristic (A*)")
             print(f" ~~ BONUS ~~")
-            print(f"4) Yen's algorithm to find kth shortest path w/o heuristic")
-            print(f"5) Yen's algorithm to find kth shortest path w heuristic")
+            print(f"4) Task 2x: Energy constrained shortest path (UCS + modification)")
+            print(f"5) Task 3x: Energy Constrained shortest path w/ Heuristic (A* + modification)")
             choice = input("What would you like to do (X to exit): ")
 
             if choice.upper() == 'X':
@@ -222,7 +212,7 @@ def main():
                 if (choice >= 2 and choice <= 5):
                     budget = int(input("Enter energy budget: "))
 
-                if (choice >= 3 and choice <= 5):
+                if (choice == 3 or choice == 5):
                     print("E: Euclidean (Pythagorean theorem aka Bird's Eye Distance)")
                     print("M: Manhattan (x_coord distance + y_coord distance aka Grid Distance)")
                     dist_choice = input("Select type of distance heuristic: ")
@@ -259,12 +249,12 @@ def main():
                 start_time = time.time()
                 yen_algo_mod(graph, start_node, end_node, budget, astar=False)
                 end_time = time.time()
-                print("total time taken: ", end_time - start_time)
+                print(f"Time elapsed: {round(end_time - start_time, 2)}")
             elif choice == 5:
                 start_time = time.time()
                 yen_algo_mod(graph, start_node, end_node, budget, astar=True)
                 end_time = time.time()
-                print("total time taken: ", end_time - start_time)
+                print(f"Time elapsed: {round(end_time - start_time, 2)}")
             else:
                 print("Invalid choice")
 
