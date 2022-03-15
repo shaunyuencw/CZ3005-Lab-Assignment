@@ -66,7 +66,6 @@ def ucs_dist_start(graph, start, end):
     came_from = {}
 
     while len(queue.queue) > 0:
-        print('Search is running')
         curr_node = queue.get()[1]
 
         # stop if the current node is the end node
