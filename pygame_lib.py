@@ -1,3 +1,5 @@
+#library courtesy of Richard
+
 # Imports
 from operator import is_
 import sys
@@ -8,16 +10,16 @@ from queue import PriorityQueue
 from graph_lib import Graph
 
 # pygame constants
-WINDOW_SIZE = (WIDTH, HEIGHT) = 1500, 750
+WINDOW_SIZE = (WIDTH, HEIGHT) = 512, 512
 COLORS = {
     "WHITE" : (255, 255, 255),
     "BLUE" : (0, 0, 255),
     "GREEN" : (0, 255, 0),
-    "RED" : (255, 0, 0),
+    "RED" : (255, 0, 0), 
     "BLACK" : (0, 0, 0)
 }
 
-# scaling factor for graph coordinates
+# coordinate limits for NYC dataset
 min_x = -74499998
 max_x = -73500016
 min_y = 40300009
@@ -26,21 +28,11 @@ max_y = 41299997
 w_scale = WIDTH / ((-73500016) - (-74499998))
 h_scale = HEIGHT / (41299997 - 40300009)
 
-# Coordinate scaling
-def scale_coordinate(coord: list[float, float]):
-    # print(f"coord[0]: {type(coord[0])}")
-    # print(f"min_x: {type(min_x)}")
-    # print(f"w_scale: {type(w_scale)}")
-    # print(f"coord[1]: {type(coord[1])}")
-    # print(f"min_y: {type(min_y)}")
-    # print(f"h_scale: {type(h_scale)}")
+# scale dataset to fit Window
+def scale_coordinate(coord: 'list[float, float]'):
     return [(coord[0] - min_x) * w_scale, (coord[1] - min_y) * h_scale]
 
-# Reverse coordinate scaling
-def reverse_scale_coordinate(coord):
-    return [coord[0] / w_scale + min_x, coord[1] / h_scale + min_y]
-
-# return traced and reversed path
+# return path trace and reverse to display path from start to terminal node
 def trace_path(parent, start, end):
     path = [end]
     while path[-1] != start:
@@ -49,8 +41,8 @@ def trace_path(parent, start, end):
     print_path(path)
     return path
 
-# Print out path
-def print_path(path: list[str]):
+# print out path
+def print_path(path: 'list[str]'):
     print("S->", end="")
     for node in path[1:-1]:
         print(f"{node}->", end="")
@@ -63,12 +55,12 @@ class Window:
         self.window = None
 
     # Draw node on window
-    def draw_node(self, coord: list[float, float], colour: tuple[int, int, int] = COLORS["BLUE"], size: int = 1):
+    def draw_node(self, coord: 'list[float, float]', colour: 'tuple[int, int, int]' = COLORS["RED"], size: int = 1):
         scaled_coord = scale_coordinate(coord)
         pygame.draw.circle(self.window, colour, scaled_coord, size)
 
     # Draw edge between two nodes
-    def draw_edge(self, node_from: str, node_to: str, colour: tuple[int, int, int] = COLORS["BLUE"]):
+    def draw_edge(self, node_from: str, node_to: str, colour: 'tuple[int, int, int]' = COLORS["RED"]):
         node_from_coord = self.graph.get_coordinates(node_from)
         scaled_node_from_coord = scale_coordinate(node_from_coord)
         node_to_coord = self.graph.get_coordinates(node_to)
@@ -81,7 +73,7 @@ class Window:
 
         font = pygame.font.SysFont("monospace", 15)
         self.window = pygame.display.set_mode(WINDOW_SIZE)
-        pygame.display.set_caption("CZ3005 Graph Demo")
+        pygame.display.set_caption("Search Path Graph Visualization")
 
         is_searching = True
         is_setup = True # To run setup once
@@ -133,7 +125,7 @@ class Window:
             if is_searching and p_queue.empty() == False:
                 distance, current_node = p_queue.get()
                 coordinates = self.graph.get_coordinates(current_node)
-                self.draw_node(coordinates, COLORS["RED"])
+                self.draw_node(coordinates, COLORS["BLUE"])
 
                 # Stop searching if target node is found
                 if current_node == end_node:
@@ -211,7 +203,7 @@ class Window:
 
         font = pygame.font.SysFont("monospace", 15)
         self.window = pygame.display.set_mode(WINDOW_SIZE)
-        pygame.display.set_caption("CZ3005 Graph Demo")
+        pygame.display.set_caption("Search Path Graph Visualization")
 
         is_searching = True
         is_setup = True # To run setup once
@@ -263,7 +255,7 @@ class Window:
             if is_searching and p_queue.empty() == False:
                 distance, current_node = p_queue.get()
                 coordinates = self.graph.get_coordinates(current_node)
-                self.draw_node(coordinates, COLORS["RED"])
+                self.draw_node(coordinates, COLORS["GREEN"])
 
                 # Stop searching if target node is found
                 if current_node == end_node:
@@ -345,7 +337,7 @@ class Window:
 
         font = pygame.font.SysFont("monospace", 15)
         self.window = pygame.display.set_mode(WINDOW_SIZE)
-        pygame.display.set_caption("CZ3005 Graph Demo")
+        pygame.display.set_caption("Search Path Graph Visualization")
 
         is_searching = True
         is_setup = True # To run setup once
@@ -399,7 +391,7 @@ class Window:
             if is_searching and p_queue.empty() == False:
                 herustic_cost, nodes_tracker, current_node = p_queue.get()
                 coordinates = self.graph.get_coordinates(current_node)
-                self.draw_node(coordinates, COLORS["RED"])
+                self.draw_node(coordinates, COLORS["BLUE"])
 
                 # Stop searching if target node is found
                 if current_node == end_node:
